@@ -2,6 +2,7 @@ import React from "react";
 import BotCollection from './BotCollection'
 import YourBotArmy from './YourBotArmy'
 import BotSpecs from '../components/BotSpecs'
+import SearchBots from '../components/SearchBots'
 
 const BOTS_URL = 'https://bot-battler-api.herokuapp.com/api/v1/bots'
 
@@ -11,7 +12,8 @@ class BotsPage extends React.Component {
   state = {
     bots: [],
     botsInArmyIds: [],
-    botSpecId: null
+    botSpecId: null,
+    searchTerm: ""
   }
 
   getAllBots = () => {
@@ -27,15 +29,19 @@ class BotsPage extends React.Component {
   renderBotSpecs = () => {
     const {bots, botSpecId} = this.state
     const bot = bots.find(bot => bot.id === botSpecId)
-    
+
     return <BotSpecs resetBotSpec={this.resetBotSpec} addBotToArmy={this.addBotToArmy} bot={bot}/>
   }
+
+  updateSearch = (event) => this.setState({searchTerm: event.target.value})
+
+  filteredBots = () => this.state.bots.filter(bot => bot.name.toLowerCase().includes(this.state.searchTerm.toLowerCase()))
 
   resetBotSpec = () => this.setState({botSpecId: null})
 
   setBotSpec = (botId) => this.setState({botSpecId : botId})
 
-  renderBotCollection = () => <BotCollection setBotSpec={this.setBotSpec} bots={this.state.bots}/>
+  renderBotCollection = () => <BotCollection setBotSpec={this.setBotSpec} bots={this.filteredBots()}/>
 
   componentDidMount() {
     this.getAllBots()
@@ -45,6 +51,8 @@ class BotsPage extends React.Component {
     return (
       <div>
         <YourBotArmy bots={this.armyBots()}/>
+        <SearchBots updateSearch={this.updateSearch}/>
+        <br/>
         {this.state.botSpecId ? this.renderBotSpecs() : this.renderBotCollection()}
       </div>
     );
