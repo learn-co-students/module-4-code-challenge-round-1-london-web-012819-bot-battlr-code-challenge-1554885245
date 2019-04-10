@@ -4,7 +4,7 @@ import BotCard from "../components/BotCard";
 class BotCollection extends React.Component {
 	//your code here
 	
-	renderBotCards = () => this.props.bots.map(bot => <BotCard setBotSpec={this.props.setBotSpec} bot={bot}/>)
+	renderBotCards = () => this.props.bots.map(bot => <BotCard key={bot.id} setBotSpec={this.props.setBotSpec} bot={bot}/>)
 
   render(){
   	return (

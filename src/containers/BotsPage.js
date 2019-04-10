@@ -3,6 +3,7 @@ import BotCollection from './BotCollection'
 import YourBotArmy from './YourBotArmy'
 import BotSpecs from '../components/BotSpecs'
 import SearchBots from '../components/SearchBots'
+import SortBots from '../components/SortBots'
 
 const BOTS_URL = 'https://bot-battler-api.herokuapp.com/api/v1/bots'
 
@@ -13,7 +14,8 @@ class BotsPage extends React.Component {
     bots: [],
     botsInArmyIds: [],
     botSpecId: null,
-    searchTerm: ""
+    searchTerm: "",
+    sortByName: false
   }
 
   getAllBots = () => {
@@ -41,7 +43,26 @@ class BotsPage extends React.Component {
 
   setBotSpec = (botId) => this.setState({botSpecId : botId})
 
-  renderBotCollection = () => <BotCollection setBotSpec={this.setBotSpec} bots={this.filteredBots()}/>
+  renderBotCollection = () => <BotCollection setBotSpec={this.setBotSpec} bots={this.botsSortedByName(this.filteredBots())}/>
+
+  updateNameSort = () => this.setState({sortByName: !this.state.sortByName})
+
+  botsSortedByName = (bots) => {
+    if (this.state.sortByName) {
+      return bots.sort((a,b) => {
+        if (a.name < b.name) {
+          return -1;
+        }
+        if (a.name > b.name) {
+          return 1;
+        }
+        return 0;
+      })
+    }
+    else {
+      return bots
+    }
+  }
 
   componentDidMount() {
     this.getAllBots()
@@ -52,6 +73,7 @@ class BotsPage extends React.Component {
       <div>
         <YourBotArmy bots={this.armyBots()}/>
         <SearchBots updateSearch={this.updateSearch}/>
+        <SortBots updateNameSort={this.updateNameSort}/>
         <br/>
         {this.state.botSpecId ? this.renderBotSpecs() : this.renderBotCollection()}
       </div>
